@@ -5,6 +5,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AmigoSecretoContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Registro dos repositórios
+builder.Services.AddScoped<IGrupoRepository, GrupoRepository>();
+builder.Services.AddScoped<IParticipanteRepository, ParticipanteRepository>();
+
+// Registro dos serviços
+builder.Services.AddScoped<IAmigoSecretoService, AmigoSecretoService>();
+
 // Add services to the container.
 
 builder.Services.AddControllers();

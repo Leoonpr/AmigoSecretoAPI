@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Mail;
 using AmigoSecretoAPI.Models;
 using AmigoSecretoAPI.Repositories.Interface;
@@ -49,18 +50,36 @@ public class AmigoSecretoService : IAmigoSecretoService
         var random = new Random();
         var shuffled = participantes.OrderBy(p => random.Next()).ToList();
 
+        // Atribuindo os amigos secretos
         for (int i = 0; i < shuffled.Count; i++)
         {
             shuffled[i].AmigoSecretoId = shuffled[(i + 1) % shuffled.Count].Id;
             await _participanteRepository.AtualizarParticipante(shuffled[i]);
         }
 
+        // Enviando os emails com os amigos secretos
         foreach (var participante in participantes)
         {
-            var amigoSecreto = await _participanteRepository.ObterParticipantePorId(participante.AmigoSecretoId.Value);
-            await EnviarEmail(participante.Email, amigoSecreto.Nome);
+            if (participante.AmigoSecretoId.HasValue)
+            {
+                var amigoSecreto = await _participanteRepository.ObterParticipantePorId(participante.AmigoSecretoId.Value);
+                if (amigoSecreto != null)
+                {
+                    string corpoEmail = $"Olá {participante.Nome},\n\nSeu amigo secreto é: {amigoSecreto.Nome}.";
+                    await EnviarEmail(participante.Email, amigoSecreto.Nome, corpoEmail);
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Amigo secreto não encontrado para o participante {participante.Nome}.");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException($"Amigo secreto não atribuído para o participante {participante.Nome}.");
+            }
         }
     }
+
 
     public async Task<string> ObterAmigoSorteado(int participanteId)
     {
@@ -74,23 +93,33 @@ public class AmigoSecretoService : IAmigoSecretoService
         return amigoSecreto.Nome;
     }
 
-    private async Task EnviarEmail(string email, string amigoSecreto)
-{
-    var message = new MimeMessage();
-    message.From.Add(new MailboxAddress("Amigo Secreto", "no-reply@amigosecreto.com"));
-    message.To.Add(new MailboxAddress("", email));
-    message.Subject = "Seu Amigo Secreto!";
-    message.Body = new TextPart("plain")
+     public async Task EnviarEmail(string destinatario, string assunto, string corpo)
     {
-        Text = $"Você tirou: {amigoSecreto}"
-    };
+        var smtpClient = new SmtpClient("localhost")
+        {
+            Port = 25,  // A porta 25 é a padrão do Papercut SMTP
+            Credentials = new NetworkCredential("", ""),  // Sem autenticação no Papercut
+            EnableSsl = false
+        };
 
-    using (var client = new MailKit.Net.Smtp.SmtpClient())
-    {
-        await client.ConnectAsync("smtp.example.com", 587, SecureSocketOptions.StartTls);
-        await client.AuthenticateAsync("user", "password");
-        await client.SendAsync(message);
-        await client.DisconnectAsync(true);
+        var mailMessage = new MailMessage
+        {
+            From = new MailAddress("seu-email@dominio.com"),
+            Subject = assunto,
+            Body = corpo,
+            IsBodyHtml = true
+        };
+
+        mailMessage.To.Add(destinatario);
+
+        try
+        {
+            await smtpClient.SendMailAsync(mailMessage);
+            Console.WriteLine("Email enviado com sucesso!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao enviar o email: {ex.Message}");
+        }
     }
-}
 }

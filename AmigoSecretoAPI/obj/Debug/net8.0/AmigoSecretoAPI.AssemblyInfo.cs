@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AmigoSecretoAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ea207dfc45e8b024d0ad3d3aacb95a26dbc99062")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+339b5279a023c46bdb46fd2af79f964e100b9a39")]
 [assembly: System.Reflection.AssemblyProductAttribute("AmigoSecretoAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AmigoSecretoAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -32,6 +32,16 @@ public class AmigoSecretoService : IAmigoSecretoService
     {
         return await _participanteRepository.ObterParticipantesPorGrupo(grupoId);
     }
+    public async Task<Grupo> ObterGrupoPorId(int id)
+    {
+      return await _grupoRepository.ObterGrupoPorId(id);
+    }
+
+    public async Task<Participante> ObterParticipantePorId(int id)
+    {
+      return await _participanteRepository.ObterParticipantePorId(id);
+    }
+
 
     public async Task GerarSorteio(int grupoId)
     {

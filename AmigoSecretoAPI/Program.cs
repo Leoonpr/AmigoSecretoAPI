@@ -1,4 +1,8 @@
 using AmigoSecretoAPI.Context;
+using AmigoSecretoAPI.Repositories;
+using AmigoSecretoAPI.Repositories.Interface;
+using AmigoSecretoAPI.Services;
+using AmigoSecretoAPI.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

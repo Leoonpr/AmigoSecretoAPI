@@ -50,14 +50,12 @@ public class AmigoSecretoService : IAmigoSecretoService
         var random = new Random();
         var shuffled = participantes.OrderBy(p => random.Next()).ToList();
 
-        // Atribuindo os amigos secretos
         for (int i = 0; i < shuffled.Count; i++)
         {
             shuffled[i].AmigoSecretoId = shuffled[(i + 1) % shuffled.Count].Id;
             await _participanteRepository.AtualizarParticipante(shuffled[i]);
         }
 
-        // Enviando os emails com os amigos secretos
         foreach (var participante in participantes)
         {
             if (participante.AmigoSecretoId.HasValue)
@@ -97,8 +95,8 @@ public class AmigoSecretoService : IAmigoSecretoService
     {
         var smtpClient = new SmtpClient("localhost")
         {
-            Port = 25,  // A porta 25 é a padrão do Papercut SMTP
-            Credentials = new NetworkCredential("", ""),  // Sem autenticação no Papercut
+            Port = 25,
+            Credentials = new NetworkCredential("", ""),  
             EnableSsl = false
         };
 

@@ -17,11 +17,9 @@ namespace AmigoSecretoAPI.Controllers
             _amigoSecretoService = amigoSecretoService;
         }
 
-        // Adicionar um participante ao grupo
         [HttpPost]
         public async Task<ActionResult<Participante>> AdicionarParticipante([FromBody] ParticipanteDto participanteDto)
         {
-            // Obter o grupo com base no grupoId
             var grupo = await _amigoSecretoService.ObterGrupoPorId(participanteDto.GrupoId);
             if (grupo == null)
             {
@@ -37,14 +35,11 @@ namespace AmigoSecretoAPI.Controllers
                 Grupo = grupo // Associa o participante ao grupo
             };
 
-            // Adicionar o participante
             var participanteAdicionado = await _amigoSecretoService.AdicionarParticipante(participante);
 
-            // Retornar a resposta com o participante adicionado, com a URL do recurso criado
             return CreatedAtAction(nameof(GetParticipante), new { id = participanteAdicionado.Id }, participanteAdicionado);
         }
 
-        // Obter um participante por ID
         [HttpGet("{id}")]
         public async Task<ActionResult<Participante>> GetParticipante(int id)
         {
@@ -56,28 +51,26 @@ namespace AmigoSecretoAPI.Controllers
             return participante;
         }
 
-        // Obter todos os participantes de um grupo
         
-[HttpGet("grupo/{grupoId}")]
-public async Task<ActionResult<List<ParticipanteResponseDto>>> GetParticipantesPorGrupo(int grupoId)
-{
-    var participantes = await _amigoSecretoService.ObterParticipantesPorGrupo(grupoId);
-    
-    // Mapeie para o DTO
-    var participantesResponse = participantes.Select(p => new ParticipanteResponseDto
-    {
-        Id = p.Id,
-        Nome = p.Nome,
-        Email = p.Email,
-        AmigoSecretoId = p.AmigoSecretoId,
-        AmigoSecretoNome = p.AmigoSecreto?.Nome
-    }).ToList();
+        [HttpGet("grupo/{grupoId}")]
+        public async Task<ActionResult<List<ParticipanteResponseDto>>> GetParticipantesPorGrupo(int grupoId)
+        {
+            var participantes = await _amigoSecretoService.ObterParticipantesPorGrupo(grupoId);
+            
+            // Mapeie para o DTO
+            var participantesResponse = participantes.Select(p => new ParticipanteResponseDto
+            {
+                Id = p.Id,
+                Nome = p.Nome,
+                Email = p.Email,
+                AmigoSecretoId = p.AmigoSecretoId,
+                AmigoSecretoNome = p.AmigoSecreto?.Nome
+            }).ToList();
 
-    return participantesResponse;
-}
+            return participantesResponse;
+        }
 
 
-        // Gerar o sorteio de amigo secreto para um grupo
         [HttpPost("sorteio/{grupoId}")]
         public async Task<ActionResult> GerarSorteio(int grupoId)
         {
@@ -92,7 +85,6 @@ public async Task<ActionResult<List<ParticipanteResponseDto>>> GetParticipantesP
             }
         }
 
-        // Obter o amigo secreto sorteado para um participante
         [HttpGet("sorteio/{participanteId}")]
         public async Task<ActionResult<string>> GetAmigoSorteado(int participanteId)
         {
